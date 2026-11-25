@@ -246,7 +246,7 @@ public final class PostgresClient: Sendable, ServiceLifecycle.Service {
         ConnectionRequest.ID,
         PostgresKeepAliveBehavor,
         PostgresClientMetrics,
-        ContinuousClock
+        PoolClock
     >
 
     let pool: Pool
@@ -291,7 +291,7 @@ public final class PostgresClient: Sendable, ServiceLifecycle.Service {
             requestType: ConnectionRequest<PostgresConnection>.self,
             keepAliveBehavior: .init(configuration.options.keepAliveBehavior, logger: backgroundLogger),
             observabilityDelegate: .init(logger: backgroundLogger),
-            clock: ContinuousClock()
+            clock: PoolClock(eventLoopGroup: eventLoopGroup)
         ) { (connectionID, pool) in
             let connection = try await factory.makeConnection(connectionID, pool: pool)
 
